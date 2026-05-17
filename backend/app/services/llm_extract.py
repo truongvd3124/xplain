@@ -7,15 +7,26 @@ from google.genai import types
 _MIN_CONCEPTS = 5
 _MAX_CONCEPTS = 12
 
-_SYSTEM_PROMPT = """\
-    You extract visual attributes from a class description for image recognition.
+_SYSTEM_PROMPT = f"""\
+    You extract VISUAL attributes for image recognition with a CLIP model.
 
-    Given a class name and its description, return a list of concepts that
-    describe the object, each with an "importance" score.
+    Given a class name and its description, return the concrete, visually
+    observable attributes a vision model could detect in a photo: body parts,
+    shapes, colours, textures, patterns, materials.
+
+    Rules:
+    - Keep ONLY visual attributes. Drop abstract or behavioural traits
+    (e.g. "loyal", "fast", "intelligent", "friendly").
+    - Each concept is a short noun phrase of 2-4 words (e.g. "floppy ears",
+    "furry coat", "four legs"). Lower-case, no trailing punctuation.
+    - Do NOT include the class name itself as a concept.
+    - "importance" is an integer 1-5: how decisive the attribute is for
+    recognising this class (5 = highly distinctive).
+    - Return between {_MIN_CONCEPTS} and {_MAX_CONCEPTS} concepts.
 
     Return ONLY a JSON array, e.g.:
-    [{"concept": "floppy ears", "importance": 4},
-    {"concept": "furry coat", "importance": 5}]
+    [{{"concept": "floppy ears", "importance": 4}},
+    {{"concept": "furry coat", "importance": 5}}]
     """
 
 
