@@ -62,13 +62,15 @@ async def verify_image(request: Request, image: UploadFile = File(...)):
     ranking.sort(key=lambda c: c.score, reverse=True)
     elapsed_ms = int((time.time() - start) * 1000)
 
-    # The top-ranked profile is taken as the prediction.
-    winner = ranking[0]
+    # Accept the top candidate only if it clears the match threshold; otherwise
+    # reject the image as "no_match".
+    best = ranking[0]
+    winner = best if best.score >= settings.MATCH_THRESHOLD else None
 
     return VerifyResponse(
-        decision="match",
+        decision="match" if winner else "no_match",
         predicted=winner,
-        concepts=concept_rows_by_id[winner.profile_id],
+        concepts=concept_rows_by_id[winner.profile_id] if winner else [],
         ranking=ranking,
         threshold=settings.MATCH_THRESHOLD,
         image_url=f"/uploads/{filename}",
