@@ -22,7 +22,7 @@ from app.services.profile_store import Profile
 router = APIRouter(prefix="/api", tags=["profiles"])
 
 ALLOWED_IMAGE_TYPES = {
-    "image/jpeg", "image/png", "image/webp", "image/bmp",
+    "image/jpeg", "image/png", "image/webp", "image/bmp", "image/avif",
 }
 MAX_REFERENCE_IMAGES = 15
 
@@ -186,4 +186,5 @@ def _extension(content_type: str) -> str:
         "image/png": ".png",
         "image/webp": ".webp",
         "image/bmp": ".bmp",
+        "image/avif": ".avif",
     }.get(content_type, ".img")
