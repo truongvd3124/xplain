@@ -18,7 +18,7 @@ class Settings(BaseSettings):
     # A concept counts as "present" when its probability >= this.
     PRESENCE_THRESHOLD: float = 0.5
     # Best profile must reach this blended score, else "no match".
-    MATCH_THRESHOLD: float = 0.5
+    MATCH_THRESHOLD: float = 0.55
 
     ALLOWED_ORIGINS: list[str] = [
         "http://localhost:5173",
