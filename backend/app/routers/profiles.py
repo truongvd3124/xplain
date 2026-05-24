@@ -17,6 +17,7 @@ from pydantic import BaseModel
 
 from app.schemas import ExtractResponse, ProfileDetail, ProfileSummary
 from app.services import llm_extract, profile_store, verify_service
+from app.services.concept_filter import is_noise, normalize_class_names
 from app.services.profile_store import Profile
 
 router = APIRouter(prefix="/api", tags=["profiles"])
@@ -50,6 +51,7 @@ def extract(body: ExtractRequest):
     except llm_extract.LlmExtractionError as exc:
         raise HTTPException(502, f"Concept extraction failed: {exc}")
 
+    concepts = _drop_noise(concepts, body.class_name)
     return ExtractResponse(concepts=concepts, source="llm")
 
 
@@ -79,7 +81,7 @@ async def create_profile(
     calibrate the prototype-similarity window, then save to disk."""
     clip = request.app.state.clip
 
-    concept_list = _parse_concepts(concepts)
+    concept_list = _drop_noise(_parse_concepts(concepts), class_name)
     if not concept_list:
         raise HTTPException(400, "At least one usable concept is required")
 
@@ -139,6 +141,12 @@ def _parse_concepts(raw: str) -> list[dict]:
             importance = 3
         parsed.append({"concept": text, "importance": importance})
     return parsed
+
+
+def _drop_noise(concepts: list[dict], class_name: str) -> list[dict]:
+    """Remove junk concepts and ones that just echo the class name."""
+    class_names = normalize_class_names([class_name])
+    return [c for c in concepts if not is_noise(c["concept"], class_names)]
 
 
 async def _embed_reference_images(
