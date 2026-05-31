@@ -23,7 +23,7 @@ class Settings(BaseSettings):
     CONCEPT_FLOOR: float = 0.45
     PROTOTYPE_FLOOR: float = 0.45
     # Minimum fraction of concepts that must be individually present.
-    COVERAGE_FLOOR: float = 0.5
+    COVERAGE_FLOOR: float = 0.6
 
     ALLOWED_ORIGINS: list[str] = [
         "http://localhost:5173",
