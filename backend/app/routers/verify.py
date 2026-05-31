@@ -62,10 +62,9 @@ async def verify_image(request: Request, image: UploadFile = File(...)):
     ranking.sort(key=lambda c: c.score, reverse=True)
     elapsed_ms = int((time.time() - start) * 1000)
 
-    # Accept the top candidate only if it clears the match threshold; otherwise
-    # reject the image as "no_match".
-    best = ranking[0]
-    winner = best if best.score >= settings.MATCH_THRESHOLD else None
+    # Highest-scoring candidate that clears the gate; scanning past ranking[0]
+    # lets a cleaner runner-up win over a strong-but-unbalanced top score.
+    winner = next((c for c in ranking if _passes_gate(c)), None)
 
     return VerifyResponse(
         decision="match" if winner else "no_match",
@@ -76,3 +75,19 @@ async def verify_image(request: Request, image: UploadFile = File(...)):
         image_url=f"/uploads/{filename}",
         inference_time_ms=elapsed_ms,
     )
+
+
+def _passes_gate(c: CandidateScore) -> bool:
+    """Match only if every evidence source clears its own floor."""
+    if c.score < settings.MATCH_THRESHOLD:
+        return False
+    if c.concept_score < settings.CONCEPT_FLOOR:
+        return False
+    # Breadth, not just a high average: enough concepts individually present.
+    if c.num_concepts > 0:
+        coverage = c.num_present / c.num_concepts
+        if coverage < settings.COVERAGE_FLOOR:
+            return False
+    if c.prototype_score is not None and c.prototype_score < settings.PROTOTYPE_FLOOR:
+        return False
+    return True

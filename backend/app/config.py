@@ -19,6 +19,11 @@ class Settings(BaseSettings):
     PRESENCE_THRESHOLD: float = 0.5
     # Best profile must reach this blended score, else "no match".
     MATCH_THRESHOLD: float = 0.55
+    # Each evidence source must also clear its own floor (see _passes_gate).
+    CONCEPT_FLOOR: float = 0.45
+    PROTOTYPE_FLOOR: float = 0.45
+    # Minimum fraction of concepts that must be individually present.
+    COVERAGE_FLOOR: float = 0.5
 
     ALLOWED_ORIGINS: list[str] = [
         "http://localhost:5173",
