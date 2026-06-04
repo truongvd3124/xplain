@@ -45,36 +45,37 @@ export default function ConceptEditor({ concepts, onChange }: Props) {
             }
           }}
           placeholder='Add a visual concept, e.g. "floppy ears"'
-          className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm
-                     focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="field flex-1 rounded-xl px-3 py-2 text-sm"
         />
         <button
           type="button"
           onClick={addConcept}
           disabled={!draft.trim()}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium
-                     hover:bg-blue-700 disabled:opacity-50 transition"
+          className="btn-grad px-4 py-2 text-white rounded-xl text-sm font-semibold"
         >
           Add
         </button>
       </div>
 
       {concepts.length === 0 ? (
-        <p className="text-xs text-gray-400 italic">No concepts yet.</p>
+        <p className="text-xs text-[var(--ink-soft)]/60 italic">No concepts yet.</p>
       ) : (
-        <ul className="space-y-1.5">
+        <ul className="space-y-1.5 stagger">
           {concepts.map((c, i) => (
             <li
               key={i}
-              className="flex items-center gap-3 bg-white border border-gray-200
-                         rounded-lg px-3 py-2"
+              className="flex items-center gap-3 rounded-xl px-3 py-2 bg-black/[0.04]
+                         border border-black/10 transition-colors hover:border-violet-400/40"
             >
-              <span className="flex-1 text-sm text-gray-800">{c.concept}</span>
-              <label className="text-xs text-gray-400">importance</label>
+              <span className="grid place-items-center w-6 h-6 shrink-0 rounded-lg brand-gradient text-[10px] font-bold text-white">
+                {c.importance}
+              </span>
+              <span className="flex-1 text-sm text-[var(--ink)]">{c.concept}</span>
+              <label className="text-xs text-[var(--ink-soft)]/60">importance</label>
               <select
                 value={c.importance}
                 onChange={(e) => updateImportance(i, Number(e.target.value))}
-                className="border border-gray-300 rounded px-1.5 py-1 text-sm"
+                className="field rounded-lg px-1.5 py-1 text-sm"
               >
                 {[1, 2, 3, 4, 5].map((n) => (
                   <option key={n} value={n}>
@@ -85,9 +86,9 @@ export default function ConceptEditor({ concepts, onChange }: Props) {
               <button
                 type="button"
                 onClick={() => removeAt(i)}
-                className="text-gray-400 hover:text-red-600 font-bold"
+                className="text-[var(--ink-soft)]/50 hover:text-red-400 font-bold text-lg leading-none transition-colors"
               >
-                x
+                ×
               </button>
             </li>
           ))}

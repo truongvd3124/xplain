@@ -34,32 +34,46 @@ export default function VerifyResultView({ result }: { result: VerifyResult }) {
     <div className="space-y-5">
       {/* Verdict banner */}
       <div
-        className={`rounded-xl p-5 border ${
+        className={`relative overflow-hidden rounded-2xl p-5 border animate-pop ${
           matched
-            ? "bg-green-50 border-green-200"
-            : "bg-amber-50 border-amber-200"
+            ? "border-emerald-400/30 bg-emerald-500/10"
+            : "border-amber-400/30 bg-amber-500/10"
         }`}
       >
+        <div
+          className={`absolute -top-10 -right-10 w-32 h-32 rounded-full blur-2xl ${
+            matched ? "bg-emerald-400/30" : "bg-amber-400/25"
+          }`}
+          aria-hidden
+        />
         {matched && predicted ? (
-          <div className="flex items-baseline justify-between">
-            <span className="text-lg font-bold text-green-700">
-              Predicted: {predicted.class_name}
-            </span>
-            <span className="text-2xl font-mono font-bold text-green-700">
+          <div className="relative flex items-center justify-between gap-4">
+            <div>
+              <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-emerald-600">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" /> Match
+              </span>
+              <p className="mt-1 text-xl font-extrabold text-[var(--ink)] capitalize">
+                {predicted.class_name}
+              </p>
+            </div>
+            <span className="mono text-3xl font-bold text-emerald-600">
               {pct(predicted.score)}
             </span>
           </div>
         ) : (
-          <div>
-            <p className="text-base font-bold text-amber-700">
+          <div className="relative">
+            <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-amber-600">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-400" /> No match
+            </span>
+            <p className="mt-1 text-base font-bold text-amber-700">
               Chưa có output phù hợp
             </p>
-            <p className="text-sm text-amber-700 mt-1">
+            <p className="text-sm text-amber-800/80 mt-1">
               Hãy config thêm class bên tab 1 (Builder).
               {best && (
                 <>
-                  {" "}Best guess <b>{best.class_name}</b> at{" "}
-                  <b>{pct(best.score)}</b> — {rejectReason(best, result.threshold)}
+                  {" "}Best guess <b className="text-amber-800">{best.class_name}</b> at{" "}
+                  <b className="text-amber-800">{pct(best.score)}</b> — {rejectReason(best, result.threshold)}
                 </>
               )}
             </p>
@@ -69,12 +83,12 @@ export default function VerifyResultView({ result }: { result: VerifyResult }) {
 
       {/* Per-concept breakdown for the predicted class */}
       {matched && predicted && result.concepts.length > 0 && (
-        <div className="bg-white border border-gray-200 rounded-xl p-4">
+        <div className="glass rounded-2xl p-4">
           <div className="flex justify-between items-baseline mb-3">
-            <h3 className="text-sm font-semibold text-gray-700">
-              Why "{predicted.class_name}"?
+            <h3 className="text-sm font-semibold text-[var(--ink)]">
+              Why “{predicted.class_name}”?
             </h3>
-            <span className="text-xs text-gray-500">
+            <span className="text-xs mono text-[var(--ink-soft)]">
               {predicted.num_present}/{predicted.num_concepts} concepts present
             </span>
           </div>
@@ -83,26 +97,28 @@ export default function VerifyResultView({ result }: { result: VerifyResult }) {
               <li key={c.concept} className="flex items-center gap-3">
                 <span
                   className={`w-4 text-center text-sm ${
-                    c.present ? "text-green-600" : "text-gray-300"
+                    c.present ? "text-emerald-500" : "text-black/20"
                   }`}
                 >
                   {c.present ? "✓" : "·"}
                 </span>
-                <span className="w-40 text-sm text-gray-700 truncate">
+                <span className="w-40 text-sm text-[var(--ink-soft)] truncate">
                   {c.concept}
                 </span>
-                <div className="flex-1 h-2 bg-gray-100 rounded-full">
+                <div className="flex-1 h-2 bg-black/[0.06] rounded-full overflow-hidden">
                   <div
-                    className={`h-2 rounded-full ${
-                      c.present ? "bg-green-500" : "bg-gray-300"
+                    className={`h-2 rounded-full bar-grow ${
+                      c.present
+                        ? "bg-gradient-to-r from-emerald-400 to-teal-400"
+                        : "bg-black/10"
                     }`}
                     style={{ width: pct(c.probability) }}
                   />
                 </div>
-                <span className="w-12 text-right text-xs font-mono text-gray-500">
+                <span className="w-12 text-right text-xs mono text-[var(--ink-soft)]">
                   {pct(c.probability)}
                 </span>
-                <span className="w-10 text-right text-[10px] text-gray-400">
+                <span className="w-10 text-right text-[10px] text-[var(--ink-soft)]/50">
                   w{c.importance}
                 </span>
               </li>
@@ -111,7 +127,7 @@ export default function VerifyResultView({ result }: { result: VerifyResult }) {
         </div>
       )}
 
-      <p className="text-xs text-gray-400 text-right">
+      <p className="text-xs text-[var(--ink-soft)]/50 text-right mono">
         Inference time: {result.inference_time_ms} ms
       </p>
     </div>

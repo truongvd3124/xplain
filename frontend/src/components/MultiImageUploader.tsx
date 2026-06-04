@@ -41,10 +41,10 @@ export default function MultiImageUploader({
           setDragOver(false);
           addFiles(e.dataTransfer.files);
         }}
-        className={`block border-2 border-dashed rounded-xl p-5 text-center cursor-pointer transition ${
+        className={`block rounded-2xl p-5 text-center cursor-pointer transition-all duration-300 border-2 border-dashed ${
           dragOver
-            ? "border-blue-500 bg-blue-50"
-            : "border-gray-300 hover:border-gray-400"
+            ? "border-violet-400 bg-violet-500/10"
+            : "border-black/10 hover:border-violet-400/60 hover:bg-black/[0.03]"
         }`}
       >
         <input
@@ -54,31 +54,31 @@ export default function MultiImageUploader({
           onChange={(e) => addFiles(e.target.files)}
           className="hidden"
         />
-        <p className="text-sm font-medium text-gray-600">
+        <p className="text-sm font-medium text-[var(--ink-soft)]">
           Drop reference images here or click to browse
         </p>
-        <p className="text-xs text-gray-400 mt-1">
-          {files.length}/{max} selected · 3+ images enables calibration
+        <p className="text-xs text-[var(--ink-soft)]/60 mt-1">
+          <span className="mono text-violet-600">{files.length}/{max}</span> selected · 3+ images enables calibration
         </p>
       </label>
 
       {files.length > 0 && (
-        <div className="grid grid-cols-5 gap-2">
+        <div className="grid grid-cols-5 gap-2 stagger">
           {files.map((file, i) => (
             <div key={i} className="relative group">
               <img
                 src={URL.createObjectURL(file)}
                 alt={`reference ${i + 1}`}
-                className="w-full h-20 object-cover rounded-lg border border-gray-200"
+                className="w-full h-20 object-cover rounded-xl border border-black/10 shadow-md shadow-indigo-900/10"
               />
               <button
                 type="button"
                 onClick={() => removeAt(i)}
-                className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-red-500 text-white
+                className="absolute -top-1.5 -right-1.5 w-5 h-5 grid place-items-center bg-red-500 text-white
                            rounded-full text-xs font-bold opacity-0 group-hover:opacity-100
-                           transition"
+                           shadow-lg transition hover:scale-110"
               >
-                x
+                ×
               </button>
             </div>
           ))}

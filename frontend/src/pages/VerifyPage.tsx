@@ -37,58 +37,57 @@ export default function VerifyPage() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6 space-y-6">
-      <header>
-        <h1 className="text-2xl font-bold text-gray-900">Predict an image</h1>
+    <div className="max-w-4xl mx-auto px-6 py-10 space-y-6">
+      <header className="animate-fade-up">
+        <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-black/[0.04] border border-black/10 text-violet-600">
+          Step 2
+        </span>
+        <h1 className="mt-3 text-3xl font-extrabold tracking-tight text-[var(--ink)]">
+          Predict an <span className="text-gradient">image</span>
+        </h1>
+        <p className="mt-1.5 text-sm text-[var(--ink-soft)]">
+          Upload a photo and the model verifies it against your saved class profiles.
+        </p>
       </header>
 
       {profiles.length === 0 ? (
-        <p className="text-sm text-gray-500 bg-amber-50 border border-amber-200 rounded-lg p-4">
+        <p className="glass rounded-2xl p-5 text-sm text-amber-700 animate-fade-up">
           No profiles yet. Create one in the Builder tab first.
         </p>
       ) : !result ? (
-        <div className="space-y-4">
-          <p className="text-xs text-gray-500">
-            Comparing against {profiles.length} profile
-            {profiles.length !== 1 ? "s" : ""}:{" "}
-            <span className="text-gray-700">
-              {profiles.map((p) => p.class_name).join(", ")}
-            </span>
-          </p>
-
+        <div className="glass glass-hover rounded-2xl p-5 space-y-4 animate-fade-up">
           <ImageUploader onFileSelect={setFile} selectedFile={file} />
 
           <button
             onClick={handleVerify}
             disabled={!file || loading}
-            className="w-full py-2.5 bg-blue-600 text-white rounded-lg text-sm
-                       font-medium hover:bg-blue-700 disabled:opacity-50 transition"
+            className="btn-grad w-full py-3 text-white rounded-xl text-sm font-semibold"
           >
             Predict
           </button>
 
           {error && (
-            <p className="text-red-600 text-sm bg-red-50 rounded-lg p-3">
+            <p className="text-red-600 text-sm bg-red-500/10 border border-red-400/20 rounded-xl p-3">
               {error}
             </p>
           )}
         </div>
       ) : (
-        <div className="space-y-4">
-          <div className="grid grid-cols-[200px_1fr] gap-5">
+        <div className="space-y-4 animate-fade-up">
+          <div className="grid grid-cols-[220px_1fr] gap-5 max-sm:grid-cols-1">
             <img
               src={result.image_url}
               alt="verified"
-              className="w-full rounded-xl border border-gray-200 object-cover"
+              className="w-full rounded-2xl border border-black/10 object-cover shadow-xl shadow-indigo-900/15 animate-pop"
             />
             <VerifyResultView result={result} />
           </div>
           <button
             onClick={reset}
-            className="px-4 py-2 border border-gray-300 rounded-lg text-sm
-                       text-gray-700 hover:bg-gray-50 transition"
+            className="px-4 py-2 border border-black/10 rounded-xl text-sm
+                       text-[var(--ink-soft)] hover:text-[var(--ink)] hover:border-violet-400/50 hover:bg-black/[0.04] transition"
           >
-            Predict another image
+            ← Predict another image
           </button>
         </div>
       )}

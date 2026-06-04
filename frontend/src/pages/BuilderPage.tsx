@@ -92,30 +92,38 @@ export default function BuilderPage() {
   const canSave = className.trim() !== "" && concepts.length > 0 && !saving;
 
   return (
-    <div className="max-w-4xl mx-auto p-6 space-y-6">
-      <header className="flex items-start justify-between gap-4">
+    <div className="max-w-4xl mx-auto px-6 py-10 space-y-6">
+      <header className="flex items-end justify-between gap-4 animate-fade-up">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Build a class profile</h1>
+          <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-black/[0.04] border border-black/10 text-violet-600">
+            Step 1
+          </span>
+          <h1 className="mt-3 text-3xl font-extrabold tracking-tight text-[var(--ink)]">
+            Build a class <span className="text-gradient">profile</span>
+          </h1>
+          <p className="mt-1.5 text-sm text-[var(--ink-soft)]">
+            Describe a class, let AI extract its visual concepts, and save it for verification.
+          </p>
         </div>
         <button
           type="button"
           onClick={() => setShowProfiles(true)}
           title="Saved profiles"
-          className="shrink-0 flex items-center gap-2 px-3 py-2 border border-gray-300
-                     rounded-lg text-sm text-gray-700 hover:bg-gray-50 transition"
+          className="shrink-0 flex items-center gap-2 px-3.5 py-2 rounded-xl text-sm
+                     text-[var(--ink-soft)] glass glass-hover hover:text-[var(--ink)]"
         >
           <span aria-hidden className="text-base leading-none">⚙</span>
-          Saved profiles
+          Saved
           <span className="inline-flex items-center justify-center min-w-5 h-5 px-1.5
-                           text-xs font-medium rounded-full bg-blue-100 text-blue-700">
+                           text-xs font-bold rounded-full brand-gradient text-white">
             {profiles.length}
           </span>
         </button>
       </header>
 
-      <section className="bg-white border border-gray-200 rounded-xl p-5 space-y-4">
+      <section className="glass glass-hover rounded-2xl p-6 space-y-5 animate-fade-up">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">
+          <label className="block text-sm font-semibold text-[var(--ink-soft)] mb-1.5">
             Class name
           </label>
           <input
@@ -123,13 +131,12 @@ export default function BuilderPage() {
             value={className}
             onChange={(e) => setClassName(e.target.value)}
             placeholder='e.g. "dog"'
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm
-                       focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="field w-full rounded-xl px-3 py-2 text-sm"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">
+          <label className="block text-sm font-semibold text-[var(--ink-soft)] mb-1.5">
             Description
           </label>
           <textarea
@@ -137,35 +144,35 @@ export default function BuilderPage() {
             onChange={(e) => setDescription(e.target.value)}
             rows={3}
             placeholder="A dog has floppy or pointed ears, a furry coat, four legs, a snout and a tail..."
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm
-                       focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="field w-full rounded-xl px-3 py-2 text-sm resize-none"
           />
           <button
             type="button"
             onClick={handleExtract}
             disabled={!description.trim() || extracting}
-            className="mt-2 px-4 py-2 bg-amber-500 text-white rounded-lg text-sm
-                       font-medium hover:bg-amber-600 disabled:opacity-50 transition"
+            className="btn-grad mt-2 inline-flex items-center gap-2 px-4 py-2 text-white rounded-xl text-sm font-semibold"
           >
+            <span aria-hidden>✦</span>
             {extracting ? "Extracting..." : "Extract concepts with AI"}
           </button>
           {!llmAvailable && (
-            <span className="ml-2 text-xs text-gray-400">
-              AI key not configured - you can still add concepts by hand.
+            <span className="ml-2 text-xs text-[var(--ink-soft)]/60">
+              AI key not configured — you can still add concepts by hand.
             </span>
           )}
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">
-            Visual concepts ({concepts.length})
+          <label className="block text-sm font-semibold text-[var(--ink-soft)] mb-1.5">
+            Visual concepts{" "}
+            <span className="mono text-violet-600">({concepts.length})</span>
           </label>
           <ConceptEditor concepts={concepts} onChange={setConcepts} />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">
-            Reference images (optional)
+          <label className="block text-sm font-semibold text-[var(--ink-soft)] mb-1.5">
+            Reference images <span className="text-[var(--ink-soft)]/50">(optional)</span>
           </label>
           <MultiImageUploader files={images} onChange={setImages} />
         </div>
@@ -174,17 +181,16 @@ export default function BuilderPage() {
           type="button"
           onClick={handleSave}
           disabled={!canSave}
-          className="w-full py-2.5 bg-blue-600 text-white rounded-lg text-sm
-                     font-medium hover:bg-blue-700 disabled:opacity-50 transition"
+          className="btn-grad w-full py-3 text-white rounded-xl text-sm font-semibold"
         >
           Save profile
         </button>
 
         {error && (
-          <p className="text-red-600 text-sm bg-red-50 rounded-lg p-3">{error}</p>
+          <p className="text-red-600 text-sm bg-red-500/10 border border-red-400/20 rounded-xl p-3 animate-pop">{error}</p>
         )}
         {notice && (
-          <p className="text-green-700 text-sm bg-green-50 rounded-lg p-3">
+          <p className="text-emerald-700 text-sm bg-emerald-500/10 border border-emerald-400/20 rounded-xl p-3 animate-pop">
             {notice}
           </p>
         )}
@@ -192,48 +198,50 @@ export default function BuilderPage() {
 
       {showProfiles && (
         <div
-          className="fixed inset-0 z-40 flex items-center justify-center bg-black/40 p-4"
+          className="fixed inset-0 z-40 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4 animate-fade-in"
           onClick={() => setShowProfiles(false)}
         >
           <div
-            className="w-full max-w-lg max-h-[80vh] overflow-y-auto bg-white rounded-xl
-                       shadow-xl p-5 space-y-4"
+            className="glass w-full max-w-lg max-h-[80vh] overflow-y-auto rounded-2xl
+                       p-6 space-y-4 animate-pop"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between">
-              <h2 className="text-base font-semibold text-gray-900">
-                Saved profiles ({profiles.length})
+              <h2 className="text-base font-bold text-[var(--ink)]">
+                Saved profiles{" "}
+                <span className="mono text-violet-600">({profiles.length})</span>
               </h2>
               <button
                 onClick={() => setShowProfiles(false)}
                 title="Close"
-                className="text-gray-400 hover:text-gray-700 text-xl leading-none"
+                className="grid place-items-center w-8 h-8 rounded-lg text-[var(--ink-soft)]
+                           hover:text-[var(--ink)] hover:bg-black/[0.06] text-xl leading-none transition"
               >
                 ×
               </button>
             </div>
 
             {profiles.length === 0 ? (
-              <p className="text-sm text-gray-400 italic">No profiles yet.</p>
+              <p className="text-sm text-[var(--ink-soft)]/60 italic">No profiles yet.</p>
             ) : (
-              <ul className="space-y-2">
+              <ul className="space-y-2 stagger">
                 {profiles.map((p) => (
                   <li
                     key={p.id}
-                    className="flex items-center gap-3 border border-gray-200
-                               rounded-lg px-4 py-3"
+                    className="group flex items-center gap-3 rounded-xl px-4 py-3
+                               bg-black/[0.04] border border-black/10 transition-colors hover:border-violet-400/40"
                   >
                     <div className="flex-1">
-                      <span className="font-medium text-gray-900">
+                      <span className="font-semibold text-[var(--ink)] capitalize">
                         {p.class_name}
                       </span>
-                      <span className="text-xs text-gray-400 ml-2">
+                      <span className="text-xs text-[var(--ink-soft)]/60 ml-2 mono">
                         {p.num_concepts} concepts · {p.num_references} images
                       </span>
                     </div>
                     <button
                       onClick={() => handleDelete(p.id)}
-                      className="text-xs text-gray-400 hover:text-red-600"
+                      className="text-xs text-[var(--ink-soft)]/50 hover:text-red-400 transition-colors"
                     >
                       Delete
                     </button>
