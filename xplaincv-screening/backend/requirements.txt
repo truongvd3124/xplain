@@ -1,0 +1,8 @@
+# Heavy ML deps (torch, openai-clip, numpy, fastapi, sqlalchemy, google-genai,
+# pillow, uvicorn, pydantic-settings, python-multipart) are inherited from the
+# parent venv via --system-site-packages. Only the new infra deps live here.
+celery>=5.4
+redis>=5.0
+pgvector>=0.3
+psycopg[binary]>=3.2
+alembic>=1.13

@@ -1,0 +1,19 @@
+# API image — for cloud deployment (AWS ECS/EC2). Do NOT build on the local
+# dev box: it installs its own torch stack (several GB) and the disk is tight.
+FROM python:3.12-slim
+
+WORKDIR /srv
+
+# CPU torch keeps the image small; switch to the cu124 index for GPU nodes.
+RUN pip install --no-cache-dir torch torchvision --index-url https://download.pytorch.org/whl/cpu \
+    && pip install --no-cache-dir \
+       fastapi "uvicorn[standard]" pydantic-settings python-multipart \
+       Pillow numpy google-genai openai-clip \
+       celery redis pgvector "psycopg[binary]" alembic
+
+COPY app ./app
+COPY alembic ./alembic
+COPY alembic.ini .
+
+EXPOSE 8000
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]

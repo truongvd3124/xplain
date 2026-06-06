@@ -1,0 +1,42 @@
+# Pinned project name: compose normally derives it from the folder name, and
+# the folder was renamed (xplain-screening -> xplaincv-screening). Keeping the
+# original name preserves the existing pgdata/redisdata volumes.
+name: xplain-screening
+
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: xplain_postgres
+    environment:
+      POSTGRES_USER: xplain
+      POSTGRES_PASSWORD: xplain
+      POSTGRES_DB: xplain
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U xplain -d xplain"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: xplain_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redisdata:/data
+    command: ["redis-server", "--appendonly", "yes"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+  redisdata:
