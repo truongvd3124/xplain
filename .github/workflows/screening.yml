@@ -105,3 +105,14 @@ jobs:
           tags: |
             ghcr.io/${{ steps.repo-name.outputs.repo }}/screening-worker:latest
             ghcr.io/${{ steps.repo-name.outputs.repo }}/screening-worker:${{ github.sha }}
+
+      # Build & Push Frontend Image
+      - name: Build and push Frontend Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: xplaincv-screening/frontend
+          file: xplaincv-screening/frontend/Dockerfile
+          push: ${{ github.event_name == 'push' }}
+          tags: |
+            ghcr.io/${{ steps.repo-name.outputs.repo }}/screening-frontend:latest
+            ghcr.io/${{ steps.repo-name.outputs.repo }}/screening-frontend:${{ github.sha }}

@@ -1,0 +1,94 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: xplain_postgres_prod
+    environment:
+      POSTGRES_USER: xplain
+      POSTGRES_PASSWORD: xplain
+      POSTGRES_DB: xplain
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata_prod:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U xplain -d xplain"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: xplain_redis_prod
+    ports:
+      - "6379:6379"
+    volumes:
+      - redisdata_prod:/data
+    command: ["redis-server", "--appendonly", "yes"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+
+  api:
+    image: ghcr.io/truongvd3124/xplain/screening-api:latest
+    container_name: xplain_api_prod
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql+psycopg://xplain:xplain@postgres:5432/xplain
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/1
+      - CELERY_RESULT_BACKEND=redis://redis:6379/2
+    env_file:
+      - .env
+    restart: unless-stopped
+
+  worker:
+    image: ghcr.io/truongvd3124/xplain/screening-worker:latest
+    container_name: xplain_worker_prod
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      - DATABASE_URL=postgresql+psycopg://xplain:xplain@postgres:5432/xplain
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/1
+      - CELERY_RESULT_BACKEND=redis://redis:6379/2
+    env_file:
+      - .env
+    restart: unless-stopped
+
+  frontend:
+    image: ghcr.io/truongvd3124/xplain/screening-frontend:latest
+    container_name: xplain_frontend_prod
+    ports:
+      - "8080:80"  # Phục vụ Frontend tại cổng 8080 của VPS
+    depends_on:
+      - api
+    restart: unless-stopped
+
+  # Watchtower để tự động cập nhật container khi có image mới trên GHCR
+  watchtower:
+    image: containrrr/watchtower
+    container_name: xplain_watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /home/truongvd3124/.docker/config.json:/config.json # Sử dụng credentials đăng nhập GHCR từ máy host
+    command: --interval 120 --cleanup # Kiểm tra mỗi 120 giây và dọn dẹp image cũ sau khi cập nhật
+    restart: unless-stopped
+
+volumes:
+  pgdata_prod:
+  redisdata_prod:
