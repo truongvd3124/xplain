@@ -4,10 +4,13 @@ services:
   api:
     image: ghcr.io/truongvd3124/xplain/mvp-api:latest
     container_name: xplain_mvp_api_prod
+    user: "1000:1000"
+    environment:
+      - HOME=/tmp
     expose:
       - "8000"
     volumes:
-      - mvp_data_prod:/srv/data
+      - ./backend/data:/srv/data
     env_file:
       - ./backend/.env
     restart: unless-stopped
@@ -32,6 +35,3 @@ services:
       - DOCKER_API_VERSION=1.40
     command: --interval 120 --cleanup # Kiểm tra mỗi 120 giây và dọn dẹp image cũ sau khi cập nhật
     restart: unless-stopped
-
-volumes:
-  mvp_data_prod:
