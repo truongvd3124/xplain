@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  api:
+    image: ghcr.io/truongvd3124/xplain/mvp-api:latest
+    container_name: xplain_mvp_api_prod
+    expose:
+      - "8000"
+    volumes:
+      - mvp_data_prod:/srv/data
+    env_file:
+      - ./backend/.env
+    restart: unless-stopped
+
+  frontend:
+    image: ghcr.io/truongvd3124/xplain/mvp-frontend:latest
+    container_name: xplain_mvp_frontend_prod
+    ports:
+      - "8080:80"  # Phục vụ Frontend tại cổng 8080 của VPS
+    depends_on:
+      - api
+    restart: unless-stopped
+
+  # Watchtower để tự động cập nhật container khi có image mới trên GHCR
+  watchtower:
+    image: containrrr/watchtower
+    container_name: xplain_mvp_watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /home/truongvd3124/.docker/config.json:/config.json # Sử dụng credentials đăng nhập GHCR từ máy host
+    environment:
+      - DOCKER_API_VERSION=1.40
+    command: --interval 120 --cleanup # Kiểm tra mỗi 120 giây và dọn dẹp image cũ sau khi cập nhật
+    restart: unless-stopped
+
+volumes:
+  mvp_data_prod:
